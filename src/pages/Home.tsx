@@ -1,16 +1,51 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SidebarComponent } from "../component/SidebarComponent";
 import { IoIosCloseCircle } from "react-icons/io";
 import { Header } from "../component/Header";
 import { CardComponent } from "../component/CardComponent";
 import CartComponent from "../component/CartComponent";
-
-
+import { getProduct } from "../services/product";
+type products = {
+  id: number;
+  name: string;
+  quantity: number;
+  price: number;
+  discount: number | null;
+  image: string;
+  createdAt: string;
+  modifiedAt: string;
+  discount_id: string;
+  discount_type: string;
+  discount_price: number;
+  discount_percentage: number;
+  freeproduct: string;
+  freeproduct_id: string;
+  freeproduct_name: string;
+  freeproduct_quantity: number;
+  freeproduct_price: number;
+  freeproduct_discount: number;
+  freeproduct_image: string;
+  freeproduct_createdAt: string;
+};
+export type cart = products & {
+  cart_quantity: number;
+};
 function Home() {
   const sidebarRef: React.RefObject<HTMLDivElement> = useRef(null);
   const cartRef: React.RefObject<HTMLDivElement> = useRef(null);
+  const [products, setProducts] = useState<Array<products>>([]);
+  const [cart, setCart] = useState<Array<cart>>([]);
+  useEffect(() => {
+    getProduct()
+      .then((res) => {
+        console.log(res.data);
+
+        setProducts(res.data);
+      })
+      .then(() => {});
+  }, []);
   const handleSideBar = () => {
-    if (sidebarRef.current.style.left != "0px") {
+    if (sidebarRef.current?.style.left != "0px") {
       sidebarRef.current.style.left = "0px";
     } else {
       sidebarRef.current.style.left = "-1000px";
@@ -23,8 +58,50 @@ function Home() {
       cartRef.current.style.left = "-1000px";
     }
   };
+  const handleSearch = () => {
 
-  const handleSearch = () => {};
+  };
+
+  const handleCart = (id: number) => {
+    const alreadyExist = cart.find((product: products) => product.id === id);
+    if (alreadyExist) {
+      console.log(alreadyExist);
+      console.log(false);
+      return false;
+    }
+    setCart((prev) => [
+      ...prev,
+      {
+        ...products.find((product: products) => product.id === id),
+        cart_quantity: 1,
+      },
+    ]);
+  };
+
+  const handleQuantity = (type: "decrement" | "increment", id: number) => {
+    if(type == "decrement"){
+      setCart(prev=>prev.map(product => {
+        if(product.id == id){
+          return {
+            ...product,
+            cart_quantity: product.cart_quantity - 1
+          }
+        }
+        return product
+      }))
+    }else{
+      setCart(prev=>prev.map(product => {
+        if(product.id == id){
+          return {
+            ...product,
+            cart_quantity: product.cart_quantity + 1
+          }
+        }
+        return product
+      }))
+    }
+  };
+
   return (
     <div className="w-screen h-screen flex overflow-hidden">
       <div
@@ -46,14 +123,23 @@ function Home() {
           <h1 className="text-xl">Products</h1>
         </div>
         <div className="w-full md:w-full p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mt-10">
-          {Array(10)
-            .fill("")
-            .map(() => {
-              return <CardComponent />;
-            })}
+          {products.map((product, index) => {
+            return (
+              <CardComponent
+                key={index}
+                data={product}
+                addToCart={handleCart}
+              />
+            );
+          })}
         </div>
       </div>
-      <CartComponent handleCartCard={handleCartCard} cartRef={cartRef}/>
+      <CartComponent
+        handleQuantity={handleQuantity}
+        handleCartCard={handleCartCard}
+        cartRef={cartRef}
+        data={cart}
+      />
     </div>
   );
 }

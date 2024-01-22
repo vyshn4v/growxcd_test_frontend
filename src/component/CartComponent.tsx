@@ -1,21 +1,23 @@
 import React, { Fragment } from "react";
-import { BiSolidOffer } from "react-icons/bi";
-import { BiSolidDiscount } from "react-icons/bi";
-import { MdLocalOffer } from "react-icons/md";
+
 import { CiShoppingCart } from "react-icons/ci";
 import { IoIosCloseCircle } from "react-icons/io";
-type Props={
-    handleCartCard:React.MouseEventHandler<HTMLDivElement>
-    cartRef:React.LegacyRef<HTMLDivElement>
-}
-function CartComponent({handleCartCard,cartRef,}:Props) {
+import { cart } from "../pages/Home";
+import { CartCardComponent } from "./CartCardComponent";
+type Props = {
+  handleCartCard: React.MouseEventHandler<HTMLDivElement>;
+  handleQuantity: React.MouseEventHandler<HTMLDivElement>;
+  cartRef: React.LegacyRef<HTMLDivElement>;
+  data: Array<cart>;
+};
+function CartComponent({ handleCartCard, cartRef, data,handleQuantity }: Props) {
   return (
     <Fragment>
       <div
         onClick={handleCartCard}
-        className="absolute xl:hidden bottom-10 right-10"
+        className="absolute xl:hidden bottom-10 right-10 "
       >
-        <div className="bg-white p-5" style={{ borderRadius: "50%" }}>
+        <div className="bg-white p-5 shadow-xl" style={{ borderRadius: "50%" }}>
           <CiShoppingCart style={{ fontSize: "40px" }} />
         </div>
       </div>
@@ -30,31 +32,9 @@ function CartComponent({handleCartCard,cartRef,}:Props) {
             <IoIosCloseCircle style={{ fontSize: "30px" }} />
           </div>
         </div>
-        <div className="w-11/12  ">
-          <div className="w-full pl-2 flex flex-col justify-center bg-gray-100 p-3">
-            <span className="font-bold text-xl">Product name</span>
-            {/* <span className="line-through font-bold text-gray-700  text-xl">
-              $300
-            </span> */}
-            <span className="font-bold text-gray-700 text-base text-md">
-              total : $400
-            </span>
-            <span className="font-bold text-gray-700 text-base text-md flex items-center gap-1">
-              <BiSolidOffer /> 5% discount
-            </span>
-            <span className="font-bold text-gray-700 text-base text-md flex items-center gap-1">
-              <BiSolidDiscount />
-              flat 50
-            </span>
-            <span className="font-bold text-gray-700 text-base text-md flex items-center gap-1">
-              <MdLocalOffer />
-              ToothBrushfree
-            </span>
-            <span className="font-bold text-gray-700 text-base text-md flex items-center gap-1">
-              quantity
-            </span>
-          </div>
-        </div>
+        {data?.map((carItem: cart,index:number) => {
+          return <CartCardComponent key={index} handleQuantity={handleQuantity} data={carItem} />;
+        })}
       </div>
     </Fragment>
   );
