@@ -7,10 +7,21 @@ import { CartCardComponent } from "./CartCardComponent";
 type Props = {
   handleCartCard: React.MouseEventHandler<HTMLDivElement>;
   handleQuantity: React.MouseEventHandler<HTMLDivElement>;
+  handleOrder: React.MouseEventHandler<HTMLDivElement>;
   cartRef: React.LegacyRef<HTMLDivElement>;
   data: Array<cart>;
 };
-function CartComponent({ handleCartCard, cartRef, data,handleQuantity }: Props) {
+function CartComponent({
+  handleCartCard,
+  cartRef,
+  data,
+  handleQuantity,
+  handleOrder,
+}: Props) {
+  let total = 0;
+  data.forEach(
+    (product: cart) => (total += product.price * product.cart_quantity)
+  );
   return (
     <Fragment>
       <div
@@ -22,19 +33,38 @@ function CartComponent({ handleCartCard, cartRef, data,handleQuantity }: Props) 
         </div>
       </div>
       <div
-        className=" w-11/12 md:w-6/12 xl:w-1/4 h-screen bg-white flex flex-col items-center absolute xl:static"
+        className=" w-11/12  md:w-6/12 xl:w-1/4 h-screen bg-white flex flex-col items-center absolute xl:static"
         ref={cartRef}
         style={{ left: "-1000px", transition: "all 1s", zIndex: 999 }}
       >
-        <div className="w-11/12 hover:bg-slate-200 p-6 m-4 flex cursor-pointer transition-colors duration-1000 ease-in-out">
+        <div className="w-11/12  bg-white hover:bg-slate-200 p-6 flex cursor-pointer transition-colors duration-1000 ease-in-out">
           <div className="w-11/12">Selected Products</div>
-          <div onClick={handleCartCard}>
+          <div className="visible xl:invisible" onClick={handleCartCard}>
             <IoIosCloseCircle style={{ fontSize: "30px" }} />
           </div>
         </div>
-        {data?.map((carItem: cart,index:number) => {
-          return <CartCardComponent key={index} handleQuantity={handleQuantity} data={carItem} />;
-        })}
+        <div className="w-full h-screen no-scrollbar flex flex-col items-center overflow-scroll">
+          {data?.map((carItem: cart, index: number) => {
+            return (
+              <CartCardComponent
+                key={index}
+                handleQuantity={handleQuantity}
+                data={carItem}
+              />
+            );
+          })}
+        </div>
+        <div className="w-11/12  absolute bg-white bottom-0 lg:static lg:w-full hover:bg-slate-200 p-6 flex cursor-pointer transition-colors duration-1000 ease-in-out flex items-center">
+          <div className="w-6/12">Total : {total}</div>
+          <div className="w-6/12">
+            <button
+              className="w-full bg-orange-400 p-2 text-white font-bold"
+              onClick={handleOrder}
+            >
+              Pay Now
+            </button>
+          </div>
+        </div>
       </div>
     </Fragment>
   );

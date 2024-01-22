@@ -18,7 +18,7 @@ export const CartCardComponent = ({ data,handleQuantity }: props) => {
     freeproduct_name,
   } = data;
   return (
-    <div className="w-11/12 flex bg-gray-100  p-3">
+    <div className="w-11/12 flex bg-gray-100  p-3 mt-2">
       <div className="w-full pl-2 flex flex-col justify-center ">
         <span className="font-bold text-xl">{name}</span>
         {/* <span className="line-through font-bold text-gray-700  text-xl">
